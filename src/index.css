@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-obsidian-950 text-gray-200 font-body antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  @apply font-display;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0B0F17; }
+::-webkit-scrollbar-thumb { background: #2A3144; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.06];
+  }
+  .glass-strong {
+    @apply bg-white/[0.05] backdrop-blur-2xl border border-white/[0.08];
+  }
+  .neon-border {
+    @apply border border-neon-purple/30;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2), inset 0 0 8px rgba(139, 92, 246, 0.08);
+  }
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-display font-medium text-white bg-gradient-neon hover:opacity-90 transition-all duration-300;
+  }
+  .btn-secondary {
+    @apply px-6 py-3 rounded-xl font-display font-medium text-gray-200 glass-strong hover:border-neon-cyan/40 transition-all duration-300;
+  }
+  .btn-ghost {
+    @apply px-4 py-2 rounded-lg font-display font-medium text-gray-400 hover:text-white transition-all duration-200;
+  }
+  .text-gradient-neon {
+    @apply bg-clip-text text-transparent bg-gradient-neon;
+  }
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-gold;
+  }
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+}

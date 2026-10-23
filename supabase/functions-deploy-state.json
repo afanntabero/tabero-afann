@@ -1,0 +1,9 @@
+{
+  "projectId": "72269665",
+  "functions": {
+    "stripe-checkout": {
+      "hasChanged": false,
+      "hash": "feafcaf981e60bae6a55755aea876ec7fd68dc8f9abd9136f4114f99305e11b5"
+    }
+  }
+}
