@@ -13,8 +13,8 @@ export default function Contact() {
     setStatus('loading');
     try {
       const { error } = await supabase.from('contact_messages').insert({
-        name: form.name,
-        email: form.email,
+        sender_name: form.name,   // Alignement exact avec ta base de données
+        sender_email: form.email, // Alignement exact avec ta base de données
         subject: form.subject,
         message: form.message,
       });

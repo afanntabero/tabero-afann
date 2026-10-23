@@ -3,13 +3,40 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, Lock, ShoppingBag } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 export default function Header() {
   const { t, lang, toggleLang } = useLanguage();
   const { totalItems, openCart } = useCart();
+  const { session } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (!session?.user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', session.user.id)
+          .single();
+
+        setIsAdmin(data?.is_admin === true);
+      } catch {
+        setIsAdmin(false);
+      }
+    }
+
+    checkAdminStatus();
+  }, [session]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -51,10 +78,15 @@ export default function Header() {
               <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-neon text-white text-xs font-bold flex items-center justify-center animate-glow-pulse">{totalItems}</span>
             )}
           </button>
-          <Link to="/admin" className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-neon-purple transition-all">
-            <Lock size={16} />
-            {t.nav.admin}
-          </Link>
+
+          {/* Affiché UNIQUEMENT si l'utilisateur est un administrateur */}
+          {isAdmin && (
+            <Link to="/admin" className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-neon-purple transition-all">
+              <Lock size={16} />
+              {t.nav.admin}
+            </Link>
+          )}
+
           <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white glass">
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -68,9 +100,13 @@ export default function Header() {
                 {l.label}
               </Link>
             ))}
-            <Link to="/admin" className="px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
-              <Lock size={16} /> {t.nav.admin}
-            </Link>
+
+            {/* Affiché UNIQUEMENT sur mobile si l'utilisateur est un administrateur */}
+            {isAdmin && (
+              <Link to="/admin" className="px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                <Lock size={16} /> {t.nav.admin}
+              </Link>
+            )}
           </div>
         </div>
       )}

@@ -16,17 +16,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false); });
-    supabase.auth.onAuthStateChange((_event, newSession) => { (async () => { setSession(newSession); })(); });
+    supabase.auth.getSession().then(({ data }) => { 
+      setSession(data.session); 
+      setLoading(false); 
+    });
+    supabase.auth.onAuthStateChange((_event, newSession) => { 
+      setSession(newSession); 
+    });
   }, []);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
-  const signOut = async () => { await supabase.auth.signOut(); };
 
-  return <AuthContext.Provider value={{ session, loading, signIn, signOut }}>{children}</AuthContext.Provider>;
+  const signOut = async () => { 
+    await supabase.auth.signOut(); 
+  };
+
+  return (
+    <AuthContext.Provider value={{ session, loading, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
