@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X, Loader2, Video as VideoIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Loader2, Video as VideoIcon, Upload } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fetchVideos, createVideo, updateVideo, deleteVideo } from '@/services/api';
 import type { Video, VideoType } from '@/lib/types';
@@ -12,6 +12,7 @@ export default function VideoManager() {
   const [editing, setEditing] = useState<Video | null>(null);
   const [form, setForm] = useState({ title: '', type: 'music_video' as VideoType, video_url: '', thumbnail_url: '' });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const load = async () => { try { setVideos(await fetchVideos()); } finally { setLoading(false); } };
   useEffect(() => { load(); }, []);
@@ -19,11 +20,60 @@ export default function VideoManager() {
   const openAdd = () => { setEditing(null); setForm({ title: '', type: 'music_video', video_url: '', thumbnail_url: '' }); setShowModal(true); };
   const openEdit = (video: Video) => { setEditing(video); setForm({ title: video.title, type: video.type, video_url: video.video_url, thumbnail_url: video.thumbnail_url }); setShowModal(true); };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault(); setSaving(true);
-    try { if (editing) await updateVideo(editing.id, form); else await createVideo(form); await load(); setShowModal(false); } finally { setSaving(false); }
+  // Gestion de l'upload de la vidéo vers Cloudflare R2
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Appel vers ton API backend ou route d'upload connectée à R2
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'upload vers le serveur");
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        setForm((prev) => ({ ...prev, video_url: data.url }));
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert("Une erreur est survenue lors de l'envoi de la vidéo.");
+    } finally {
+      setUploading(false);
+    }
   };
-  const handleDelete = async (id: string) => { if (confirm('Delete?')) { await deleteVideo(id); await load(); } };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+    setSaving(true);
+    try { 
+      if (editing) {
+        await updateVideo(editing.id, form); 
+      } else {
+        await createVideo(form); 
+      }
+      await load(); 
+      setShowModal(false); 
+    } finally { 
+      setSaving(false); 
+    }
+  };
+
+  const handleDelete = async (id: string) => { 
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette vidéo ?')) { 
+      await deleteVideo(id); 
+      await load(); 
+    } 
+  };
 
   return (
     <div className="px-6 py-10 max-w-7xl mx-auto">
@@ -55,16 +105,45 @@ export default function VideoManager() {
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
             </div>
             <form onSubmit={handleSave} className="space-y-4">
-              <div><label className="block text-sm text-gray-400 mb-1">{t.admin.video.titleField}</label><input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40" /></div>
-              <div><label className="block text-sm text-gray-400 mb-1">{t.admin.video.type}</label>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">{t.admin.video.titleField}</label>
+                <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">{t.admin.video.type}</label>
                 <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as VideoType })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40">
-                  <option value="music_video">{t.admin.video.musicVideo}</option><option value="behind_scenes">{t.admin.video.behindScenes}</option><option value="live">{t.admin.video.live}</option>
+                  <option value="music_video">{t.admin.video.musicVideo}</option>
+                  <option value="behind_scenes">{t.admin.video.behindScenes}</option>
+                  <option value="live">{t.admin.video.live}</option>
                 </select>
               </div>
-              <div><label className="block text-sm text-gray-400 mb-1">{t.admin.video.videoUrl}</label><input required value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40" /></div>
-              <div><label className="block text-sm text-gray-400 mb-1">{t.admin.video.thumbnailUrl}</label><input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40" /></div>
+
+              {/* Champ d'upload direct de fichier vidéo vers R2 */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Fichier Vidéo (R2 Upload)</label>
+                <div className="flex items-center gap-2">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-gray-300 hover:text-white hover:border-neon-cyan/40 cursor-pointer transition">
+                    {uploading ? <Loader2 size={16} className="animate-spin text-neon-cyan" /> : <Upload size={16} className="text-neon-cyan" />}
+                    <span className="text-sm truncate">{uploading ? "Envoi en cours..." : "Choisir une vidéo"}</span>
+                    <input type="file" accept="video/*" onChange={handleFileUpload} className="hidden" disabled={uploading} />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">{t.admin.video.videoUrl}</label>
+                <input required value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="https://..." className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40" />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">{t.admin.video.thumbnailUrl}</label>
+                <input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-cyan/40" />
+              </div>
+
               <div className="flex gap-3 pt-2">
-                <button type="submit" disabled={saving} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50">{saving && <Loader2 size={16} className="animate-spin" />} {t.admin.video.save}</button>
+                <button type="submit" disabled={saving || uploading} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50">
+                  {saving && <Loader2 size={16} className="animate-spin" />} {t.admin.video.save}
+                </button>
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">{t.admin.video.cancel}</button>
               </div>
             </form>

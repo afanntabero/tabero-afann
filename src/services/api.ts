@@ -1,6 +1,31 @@
 import { supabase } from '@/lib/supabase';
 import type { Track, Video, Event, Subscriber, Broadcast, Product, Order, DeliveryStatus, ContactMessage } from '@/lib/types';
 
+// ==================== CLOUDFLARE R2 UPLOAD ====================
+export async function uploadFileToR2(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  const response = await fetch(`${supabaseUrl}/functions/v1/upload-r2`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${supabaseAnonKey}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.error || 'Erreur lors du téléchargement vers Cloudflare R2');
+  }
+
+  const data = await response.json();
+  return data.url;
+}
+
 // ==================== TRACKS ====================
 export async function fetchTracks(): Promise<Track[]> {
   const { data, error } = await supabase.from('tracks').select('*').order('release_date', { ascending: false });

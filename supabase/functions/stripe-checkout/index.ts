@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Stripe from "https://esm.sh/stripe@16.12.0";
 import { createClient as supabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
@@ -17,7 +18,7 @@ interface CheckoutItem {
   file_url: string;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 200, headers: corsHeaders });
 
   try {
@@ -52,7 +53,14 @@ Deno.serve(async (req) => {
     } else {
       const { data: newCustomer } = await supabase
         .from("customers")
-        .insert({ email: customerEmail, full_name: fullName, address: shipping?.address || "", city: shipping?.city || "", country: shipping?.country || "", postal_code: shipping?.postal_code || "" })
+        .insert({ 
+          email: customerEmail, 
+          full_name: fullName, 
+          address: shipping?.address || "", 
+          city: shipping?.city || "", 
+          country: shipping?.country || "", 
+          postal_code: shipping?.postal_code || "" 
+        })
         .select()
         .single();
       if (newCustomer) customerId = newCustomer.id;
@@ -118,7 +126,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err) {
+  } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
