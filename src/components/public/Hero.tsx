@@ -9,23 +9,27 @@ export default function Hero({ latestTrack }: { latestTrack?: Track | null }) {
   const { playTrack } = useAudioPlayer();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      <div className="absolute inset-0 bg-gradient-to-br from-obsidian-900 via-obsidian-950 to-black" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-purple/20 rounded-full blur-[120px] animate-glow-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-neon-cyan/15 rounded-full blur-[100px] animate-glow-pulse" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(139,92,246,0.08),transparent_50%)]" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-10 pb-16 bg-black">
+      {/* Fond noir total et uniforme */}
+      <div className="absolute inset-0 bg-black z-0" />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-neon-cyan font-medium mb-8 animate-fade-in">
-          <span className="w-2 h-2 rounded-full bg-neon-cyan animate-pulse" />
-          {t.hero.badge}
-        </div>
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-bold tracking-tight mb-6 animate-slide-up">
-          <span className="text-gradient-neon">{t.hero.title}</span>
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center -mt-10">
+        {/* Titre principal remonté légèrement */}
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight mb-4 text-white">
+          TABERO AFANN
         </h1>
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          {t.hero.subtitle}
-        </p>
+
+        {/* Sous-texte exact de la maquette en gras */}
+        <div className="mb-8 space-y-1">
+          <p className="text-2xl md:text-3xl font-display font-bold text-white">
+            #M@ ding<span className="text-red-500">❤️</span>
+          </p>
+          <p className="text-2xl md:text-3xl font-display font-bold text-white">
+            min@!.#
+          </p>
+        </div>
+
+        {/* Boutons d'action */}
         <div className="flex flex-wrap items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <button
             onClick={() => latestTrack && playTrack(latestTrack)}
@@ -41,20 +45,16 @@ export default function Hero({ latestTrack }: { latestTrack?: Track | null }) {
             <Mail size={18} /> {t.hero.bookArtist}
           </Link>
         </div>
+
+        {/* Pochette du dernier morceau */}
         {latestTrack?.cover_url && (
-          <div className="mt-16 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="mt-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="relative inline-block">
-              <img src={latestTrack.cover_url} alt={latestTrack.title} draggable={false} className="w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover neon-border no-select" />
+              <img src={latestTrack.cover_url} alt={latestTrack.title} draggable={false} className="w-44 h-44 md:w-52 md:h-52 rounded-2xl object-cover neon-border no-select" />
               <div className="absolute -inset-3 bg-gradient-neon opacity-20 blur-2xl rounded-3xl -z-10" />
             </div>
           </div>
         )}
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-gray-600 flex items-start justify-center p-1.5">
-          <div className="w-1 h-2 rounded-full bg-neon-cyan" />
-        </div>
       </div>
     </section>
   );

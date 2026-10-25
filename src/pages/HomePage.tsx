@@ -21,7 +21,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <>
+    <div className="bg-black min-h-screen text-white">
       <Hero latestTrack={tracks[0]} />
       <Discography tracks={tracks} />
       <VideoGallery videos={videos} />
@@ -29,6 +29,6 @@ export default function HomePage() {
       <Tour events={events} />
       <Newsletter />
       <Contact />
-    </>
+    </div>
   );
 }
