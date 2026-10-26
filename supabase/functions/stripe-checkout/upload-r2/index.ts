@@ -23,11 +23,12 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const accountId = Deno.env.get("R2_ACCOUNT_ID");
-    const accessKeyId = Deno.env.get("R2_ACCESS_KEY_ID");
-    const secretAccessKey = Deno.env.get("R2_SECRET_ACCESS_KEY");
-    const bucketName = Deno.env.get("R2_BUCKET_NAME");
-    const publicDomain = Deno.env.get("R2_PUBLIC_DOMAIN");
+    // Supporte à la fois les variables R2_ et CLOUDFLARE_R2_
+    const accountId = Deno.env.get("R2_ACCOUNT_ID") || Deno.env.get("CLOUDFLARE_R2_ACCOUNT_ID");
+    const accessKeyId = Deno.env.get("R2_ACCESS_KEY_ID") || Deno.env.get("CLOUDFLARE_R2_ACCESS_KEY_ID");
+    const secretAccessKey = Deno.env.get("R2_SECRET_ACCESS_KEY") || Deno.env.get("CLOUDFLARE_R2_SECRET_ACCESS_KEY");
+    const bucketName = Deno.env.get("R2_BUCKET_NAME") || Deno.env.get("CLOUDFLARE_R2_BUCKET_NAME");
+    const publicDomain = Deno.env.get("R2_PUBLIC_DOMAIN") || Deno.env.get("CLOUDFLARE_R2_PUBLIC_DOMAIN");
 
     if (!accountId || !accessKeyId || !secretAccessKey || !bucketName) {
       throw new Error("Les identifiants Cloudflare R2 ne sont pas configurés dans les secrets Supabase.");
@@ -50,7 +51,7 @@ Deno.serve(async (req: Request) => {
         Bucket: bucketName,
         Key: fileName,
         Body: new Uint8Array(fileBuffer),
-        ContentType: file.type || "video/mp4",
+        ContentType: file.type || "application/octet-stream",
       })
     );
 

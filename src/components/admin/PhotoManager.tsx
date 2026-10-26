@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Image as ImageIcon, Upload, ArrowLeft
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase';
+import { uploadFileToR2 } from '@/services/api';
 
 interface PhotoItem {
   id: string;
@@ -60,25 +61,14 @@ export default function PhotoManager() {
 
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de l'upload de l'image");
-      }
-
-      const data = await response.json();
-      if (data.url) {
-        setForm((prev) => ({ ...prev, image_url: data.url }));
+      // Utilisation directe de la fonction R2
+      const url = await uploadFileToR2(file);
+      if (url) {
+        setForm((prev) => ({ ...prev, image_url: url }));
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert("Une erreur est survenue lors de l'envoi de l'image.");
+      alert("Une erreur est survenue lors de l'envoi de l'image vers Cloudflare R2.");
     } finally {
       setUploading(false);
     }
@@ -123,7 +113,7 @@ export default function PhotoManager() {
   };
 
   return (
-    <div className="px-6 py-10 max-w-7xl mx-auto">
+    <div className="px-6 py-10 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           <Link to="/admin" className="btn-secondary flex items-center gap-2">
