@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Mail, Trash2, MailOpen, Calendar, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Mail, Trash2, MailOpen, Calendar, Loader2, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fetchContactMessages, markMessageRead, deleteContactMessage } from '@/services/api';
 import type { ContactMessage } from '@/lib/types';
@@ -33,7 +34,14 @@ export default function MessagesManager() {
   }
 
   return (
-    <div className="px-6 py-8 max-w-4xl mx-auto">
+    <div className="px-6 py-8 max-w-4xl mx-auto space-y-6">
+      {/* Bouton Retour au Tableau de Bord */}
+      <div>
+        <Link to="/admin" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm font-medium text-gray-300 hover:text-white hover:border-white/25 transition-all">
+          <ArrowLeft size={16} /> Tableau de Bord
+        </Link>
+      </div>
+
       <div className="mb-8">
         <h1 className="text-2xl font-display font-bold text-white mb-1">{t.admin.messages.title}</h1>
       </div>

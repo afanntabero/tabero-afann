@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X, Loader2, Video as VideoIcon, Upload } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Pencil, Trash2, X, Loader2, Video as VideoIcon, Upload, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fetchVideos, createVideo, updateVideo, deleteVideo } from '@/services/api';
 import type { Video, VideoType } from '@/lib/types';
@@ -76,7 +77,14 @@ export default function VideoManager() {
   };
 
   return (
-    <div className="px-6 py-10 max-w-7xl mx-auto">
+    <div className="px-6 py-10 max-w-7xl mx-auto space-y-6">
+      {/* Bouton Retour au Tableau de Bord */}
+      <div>
+        <Link to="/admin" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm font-medium text-gray-300 hover:text-white hover:border-white/25 transition-all">
+          <ArrowLeft size={16} /> Tableau de Bord
+        </Link>
+      </div>
+
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-display font-bold text-white">{t.admin.video.title}</h1>
         <button onClick={openAdd} className="btn-primary flex items-center gap-2"><Plus size={18} /> {t.admin.video.addVideo}</button>

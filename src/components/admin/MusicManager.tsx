@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X, Loader2, Music2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Pencil, Trash2, X, Loader2, Music2, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fetchTracks, createTrack, updateTrack, deleteTrack } from '@/services/api';
 import type { Track, TrackType } from '@/lib/types';
@@ -33,7 +34,14 @@ export default function MusicManager() {
   const handleDelete = async (id: string) => { if (confirm('Delete?')) { await deleteTrack(id); await load(); } };
 
   return (
-    <div className="px-6 py-10 max-w-7xl mx-auto">
+    <div className="px-6 py-10 max-w-7xl mx-auto space-y-6">
+      {/* Bouton Retour au Tableau de Bord */}
+      <div>
+        <Link to="/admin" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm font-medium text-gray-300 hover:text-white hover:border-white/25 transition-all">
+          <ArrowLeft size={16} /> Tableau de Bord
+        </Link>
+      </div>
+
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-display font-bold text-white">{t.admin.music.title}</h1>
         <button onClick={openAdd} className="btn-primary flex items-center gap-2"><Plus size={18} /> {t.admin.music.addTrack}</button>
@@ -74,7 +82,7 @@ export default function MusicManager() {
               <div><label className="block text-sm text-gray-400 mb-1">{t.admin.music.genre}</label><input value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-purple/40" /></div>
               <div><label className="block text-sm text-gray-400 mb-1">{t.admin.music.releaseDate}</label><input type="date" value={form.release_date} onChange={(e) => setForm({ ...form, release_date: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-purple/40" /></div>
               <div><label className="block text-sm text-gray-400 mb-1">{t.admin.music.coverUrl}</label><input value={form.cover_url} onChange={(e) => setForm({ ...form, cover_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-purple/40" /></div>
-              <div><label className="block text-sm text-gray-400 mb-1">{t.admin.music.audioUrl}</label><input value={form.audio_url} onChange={(e) => setForm({ ...form, audio_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-purple/40" /></div>
+              <div><label className="block text-sm text-gray-400 mb-1">{t.admin.music.audioUrl}</label><input value={form.audio_url} onChange={(e) => setForm({ ...file, audio_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-purple/40" /></div>
               <div><label className="block text-sm text-gray-400 mb-1">Streaming Links (JSON)</label><textarea rows={3} value={form.streaming_links} onChange={(e) => setForm({ ...form, streaming_links: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-neon-purple/40 font-mono text-xs resize-none" /></div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving} className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50">{saving && <Loader2 size={16} className="animate-spin" />} {t.admin.music.save}</button>

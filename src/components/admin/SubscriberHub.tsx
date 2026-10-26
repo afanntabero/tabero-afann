@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Users, Download, Send, Trash2, Loader2, Mail, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, Download, Send, Trash2, Loader2, Mail, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchSubscribers, deleteSubscriber, fetchBroadcasts, sendBroadcast } from '@/services/api';
@@ -34,7 +35,14 @@ export default function SubscriberHub() {
   };
 
   return (
-    <div className="px-6 py-10 max-w-5xl mx-auto">
+    <div className="px-6 py-10 max-w-5xl mx-auto space-y-6">
+      {/* Bouton Retour au Tableau de Bord */}
+      <div>
+        <Link to="/admin" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm font-medium text-gray-300 hover:text-white hover:border-white/25 transition-all">
+          <ArrowLeft size={16} /> Tableau de Bord
+        </Link>
+      </div>
+
       <h1 className="text-2xl font-display font-bold text-white mb-8">{t.admin.subscribers.title}</h1>
 
       {loading ? <div className="flex justify-center py-20"><Loader2 className="animate-spin text-neon-pink" /></div> : (

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Music2, Video, Calendar, Users, ShoppingBag, Package, Mail, LogOut, ExternalLink } from 'lucide-react';
+import { Music2, Video, Calendar, Users, ShoppingBag, Package, Mail, Image as ImageIcon, LogOut, ExternalLink } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -10,6 +10,7 @@ export default function AdminDashboard() {
   const cards = [
     { to: 'music', icon: Music2, title: t.admin.dashboard.musicManager, desc: t.admin.dashboard.musicManagerDesc, color: 'neon-purple' },
     { to: 'video', icon: Video, title: t.admin.dashboard.videoManager, desc: t.admin.dashboard.videoManagerDesc, color: 'neon-cyan' },
+    { to: 'photos', icon: ImageIcon, title: 'Gestion Photos', desc: 'Publier et gérer les photos de la galerie avec légendes', color: 'gold-400' },
     { to: 'tour', icon: Calendar, title: t.admin.dashboard.tourManager, desc: t.admin.dashboard.tourManagerDesc, color: 'gold-400' },
     { to: 'subscribers', icon: Users, title: t.admin.dashboard.subscriberHub, desc: t.admin.dashboard.subscriberHubDesc, color: 'neon-pink' },
     { to: 'store', icon: ShoppingBag, title: t.admin.dashboard.storeManager, desc: t.admin.dashboard.storeManagerDesc, color: 'neon-cyan' },

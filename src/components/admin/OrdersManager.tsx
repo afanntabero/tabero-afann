@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Package, ChevronDown, ChevronUp, Calendar, DollarSign, Download, Truck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Package, ChevronDown, ChevronUp, Calendar, DollarSign, Download, Truck, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fetchOrders, updateOrderDelivery } from '@/services/api';
 import type { Order, DeliveryStatus } from '@/lib/types';
@@ -43,7 +44,14 @@ export default function OrdersManager() {
   }
 
   return (
-    <div className="px-6 py-8 max-w-6xl mx-auto">
+    <div className="px-6 py-8 max-w-6xl mx-auto space-y-6">
+      {/* Bouton Retour au Tableau de Bord */}
+      <div>
+        <Link to="/admin" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm font-medium text-gray-300 hover:text-white hover:border-white/25 transition-all">
+          <ArrowLeft size={16} /> Tableau de Bord
+        </Link>
+      </div>
+
       <div className="mb-8">
         <h1 className="text-2xl font-display font-bold text-white mb-1">{t.admin.orders.title}</h1>
       </div>
